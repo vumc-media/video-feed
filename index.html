@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Versailles UMC Live Streams</title>
+  <title>Versailles UMC – Latest Videos</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      background: #fff;
       margin: 0;
       padding: 20px;
     }
@@ -16,30 +16,61 @@
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
       margin-top: 30px;
     }
-    .video {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-      overflow: hidden;
-    }
     .video iframe {
-      position: absolute;
       width: 100%;
-      height: 100%;
-      border: 0;
+      aspect-ratio: 16 / 9;
+      border: none;
+    }
+
+    @media (max-width: 1200px) {
+      .grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Versailles UMC - Recent Streams</h1>
-  <div class="grid">
-    <div class="video">
-      <iframe src="https://www.youtube.com/embed/videoseries?list=UU_svgodM3blLqWEBQ5yNjmA" allowfullscreen></iframe>
-    </div>
-  </div>
+  <h1>Versailles UMC – Latest Streams</h1>
+  <div class="grid" id="videoGrid"></div>
+
+  <script>
+    const apiKey = "AIzaSyAiXOBowvA3h2fzPCyZXf2OkJNQUNupPxo";
+    const channelId = "UC_svgodM3blLqWEBQ5yNjmA";
+    const maxResults = 12;
+
+    fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet,id&order=date&maxResults=${maxResults}&type=video`)
+      .then(response => response.json())
+      .then(data => {
+        const grid = document.getElementById("videoGrid");
+        data.items.forEach(item => {
+          const videoId = item.id.videoId;
+          const div = document.createElement("div");
+          div.classList.add("video");
+          div.innerHTML = `
+            <iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>
+          `;
+          grid.appendChild(div);
+        });
+      })
+      .catch(error => {
+        console.error("Error loading YouTube videos:", error);
+      });
+  </script>
 </body>
 </html>
